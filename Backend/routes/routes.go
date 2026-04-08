@@ -11,6 +11,7 @@ func SetupRoutes(r *gin.Engine) {
 	api := r.Group("/api")
 	{
 		api.POST("/login", controllers.Login)
+		api.POST("/refresh", controllers.RefreshToken)
 
 		protected := api.Group("/")
 		protected.Use(middleware.AuthMiddleware())
@@ -20,6 +21,13 @@ func SetupRoutes(r *gin.Engine) {
 			protected.PUT("/customers/:id", controllers.UpdateCustomer)
 			protected.DELETE("/customers/:id", controllers.DeleteCustomer)
 
+			protected.GET("/products", controllers.GetProducts)
+			protected.POST("/products", controllers.CreateProduct)
+			protected.PUT("/products/:id", controllers.UpdateProduct)
+			protected.DELETE("/products/:id", controllers.DeleteProduct)
+
+			protected.GET("/orders", controllers.GetOrders)
+			protected.POST("/orders", controllers.CreateOrder)
 		}
 	}
 }
