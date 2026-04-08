@@ -79,7 +79,7 @@ const Login = () => {
       </div>
 
       <div className="hidden lg:flex flex-1 bg-indigo-600 relative overflow-hidden items-center justify-center px-12">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-purple-800 opacity-90"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-indigo-600 to-purple-800 opacity-90"></div>
         <div className="absolute top-0 right-0 p-32 rounded-full bg-white opacity-5 mix-blend-overlay filter blur-3xl transform translate-x-1/2 -translate-y-1/2 w-96 h-96"></div>
         <div className="absolute bottom-0 left-0 p-32 rounded-full bg-indigo-300 opacity-20 mix-blend-overlay filter blur-3xl transform -translate-x-1/2 translate-y-1/2 w-96 h-96"></div>
 

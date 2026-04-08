@@ -104,7 +104,7 @@ const Products = () => {
                   </span>
                 </td>
                 <td className="p-4 font-medium text-slate-700">Rs. {p.price.toFixed(2)}</td>
-                <td className="p-4 text-slate-500 text-sm truncate max-w-[150px]">{p.description}</td>
+                <td className="p-4 text-slate-500 text-sm truncate max-w-37.5">{p.description}</td>
                 <td className="p-4 text-right space-x-2">
                   <button onClick={() => openModal(p)} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
                     <Edit size={18} />
