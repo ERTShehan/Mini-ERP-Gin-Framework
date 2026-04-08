@@ -32,11 +32,50 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": user.ID,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(),
+		"exp":     time.Now().Add(time.Minute * 15).Unix(),
 	})
-	tokenString, _ := token.SignedString(jwtKey)
+	accessTokenString, _ := accessToken.SignedString(jwtKey)
 
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": user.ID,
+		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
+	})
+	refreshTokenString, _ := refreshToken.SignedString(jwtKey)
+
+	c.JSON(http.StatusOK, gin.H{
+		"access_token":  accessTokenString,
+		"refresh_token": refreshTokenString,
+	})
+}
+
+type RefreshInput struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+func RefreshToken(c *gin.Context) {
+	var input RefreshInput
+	if err := c.BindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	token, _ := jwt.Parse(input.RefreshToken, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"user_id": claims["user_id"],
+			"exp":     time.Now().Add(time.Minute * 15).Unix(),
+		})
+		accessTokenString, _ := accessToken.SignedString(jwtKey)
+
+		c.JSON(http.StatusOK, gin.H{
+			"access_token": accessTokenString,
+		})
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+	}
 }
