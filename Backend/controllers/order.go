@@ -156,3 +156,81 @@ func CreateOrder(c *gin.Context) {
 		"total_amount": totalAmount,
 	})
 }
+
+type OrderStatusInput struct {
+	Status string `json:"status"`
+}
+
+func UpdateOrderStatus(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var input OrderStatusInput
+	if err := c.BindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	tx, err := config.DB.Begin()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to start transaction"})
+		return
+	}
+
+	var currentStatus string
+	err = tx.QueryRow("SELECT status FROM orders WHERE id=?", id).Scan(&currentStatus)
+	if err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
+		return
+	}
+
+	if currentStatus == "Cancel" {
+		tx.Rollback()
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Order is already cancelled, status cannot be changed"})
+		return
+	}
+
+	if input.Status == "Cancel" {
+		rows, err := tx.Query("SELECT product_id, quantity FROM order_items WHERE order_id=?", id)
+		if err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch order items"})
+			return
+		}
+
+		type itemsToRestore struct {
+			ProductID int
+			Quantity  int
+		}
+		var restoreList []itemsToRestore
+		for rows.Next() {
+			var r itemsToRestore
+			rows.Scan(&r.ProductID, &r.Quantity)
+			restoreList = append(restoreList, r)
+		}
+		rows.Close() // Close before executing updates in same tx to avoid busy locks in some drivers, though mostly safe here.
+
+		for _, item := range restoreList {
+			_, err = tx.Exec("UPDATE products SET stock_qty = stock_qty + ? WHERE id=?", item.Quantity, item.ProductID)
+			if err != nil {
+				tx.Rollback()
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to restore stock"})
+				return
+			}
+		}
+	}
+
+	_, err = tx.Exec("UPDATE orders SET status=? WHERE id=?", input.Status, id)
+	if err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update status"})
+		return
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction complete error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Order status updated successfully"})
+}
