@@ -12,6 +12,7 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		api.POST("/login", controllers.Login)
 		api.POST("/refresh", controllers.RefreshToken)
+		// api.POST("/register", controllers.Register)
 
 		protected := api.Group("/")
 		protected.Use(middleware.AuthMiddleware())

@@ -79,3 +79,25 @@ func RefreshToken(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
 	}
 }
+
+func Register(c *gin.Context) {
+	var input LoginInput
+	if err := c.BindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		return
+	}
+
+	_, err = config.DB.Exec("INSERT INTO users (username, password) VALUES (?, ?)", input.Username, string(hashedPassword))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user. Username might already exist."})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Admin user registered successfully"})
+}
