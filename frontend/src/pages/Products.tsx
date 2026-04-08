@@ -83,10 +83,10 @@ const Products = () => {
         </button>
       </div>
 
-      <div className="bg-white border rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-sm">
+            <tr className="bg-slate-50/80 border-b border-slate-200/60 text-slate-500 text-sm">
               <th className="p-4 font-medium">Name</th>
               <th className="p-4 font-medium">Stock Qty</th>
               <th className="p-4 font-medium">Price</th>
