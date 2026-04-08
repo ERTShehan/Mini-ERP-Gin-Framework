@@ -90,6 +90,21 @@ A robust, full-stack Enterprise Resource Planning (ERP) application developed to
 
 ## ⚙️ Installation & Setup
 
+You can run this project using **Docker (Recommended)** or **Manually**.
+
+### Option A: Running with Docker (Recommended)
+Make sure you have [Docker Desktop](https://www.docker.com/) installed.
+
+1. Open your terminal at the root of the project (`Mini ERP System`).
+2. Run the following command:
+   ```bash
+   docker-compose up --build -d
+   ```
+3. That's it! Docker will automatically set up the Database, Backend (Go), and Frontend (Nginx).
+   - Frontend is accessible at: `http://localhost:5173`
+   - Backend API is accessible at: `http://localhost:8080`
+
+### Option B: Manual Setup
 Before running, ensure you have **Go**, **Node.js (v18+)**, and **MySQL Server** installed.
 
 ### 1. Database Setup
@@ -98,7 +113,12 @@ Before running, ensure you have **Go**, **Node.js (v18+)**, and **MySQL Server**
     CREATE DATABASE IF NOT EXISTS minierp;
     -- Run content of the script
     ```
-2. Configure your DB connection parameters inside `Backend/config/db.go`.
+2. Create a `.env` file inside the `Backend/` directory for your database credentials:
+    ```bash
+    # Backend/.env
+    DB_DSN="root:Ijse@1234@tcp(127.0.0.1:3306)/minierp"
+    ```
+    If not created, it defaults to the above standard configuration.
 
 ### 2. Backend Initialization
 Open a bash/Powershell terminal inside the `Backend/` directory:
