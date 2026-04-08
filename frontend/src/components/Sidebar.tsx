@@ -25,7 +25,7 @@ const Sidebar = () => {
   return (
     <aside className="w-72 bg-slate-900 text-white min-h-screen flex flex-col fixed left-0 top-0 shadow-[20px_0_40px_rgba(0,0,0,0.1)] z-40">
       <div className="p-8 pb-6 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xl shadow-[0_0_20px_rgba(99,102,241,0.4)]">M</div>
+        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xl shadow-[0_0_20px_rgba(99,102,241,0.4)]">M</div>
         <h2 className="text-2xl font-bold tracking-tight">Mini<span className="text-indigo-400">ERP</span></h2>
       </div>
 
