@@ -29,6 +29,7 @@ func SetupRoutes(r *gin.Engine) {
 
 			protected.GET("/orders", controllers.GetOrders)
 			protected.POST("/orders", controllers.CreateOrder)
+			protected.PUT("/orders/:id/status", controllers.UpdateOrderStatus)
 		}
 	}
 }
